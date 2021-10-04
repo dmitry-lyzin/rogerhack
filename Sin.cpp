@@ -12,6 +12,25 @@
 
 #define fatal(x) do { perror( x); exit( EXIT_FAILURE); } while (0)
 
+//----------------------------------------------------------------
+void Sin::save( const char* filename ) const
+{
+	int filedesc = STDOUT_FILENO;
+	if( (filedesc = ::open( filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, S_IREAD | S_IWRITE )) < 0 )
+		fatal( filename );
+
+	int wrote;
+	if( (wrote = ::write( filedesc, u.buf, sizeof( u.buf ) )) < 0 )
+		fatal( filename );
+
+	if( wrote < sizeof( u.buf ) )
+	{
+		cerr << filename << ": no room for " << sizeof( u.buf ) << " bytes\n";
+		exit( EXIT_FAILURE );
+	}
+
+	::close( filedesc );
+}
 
 //----------------------------------------------------------------
 void Sin::load( const char* filename )
@@ -42,9 +61,9 @@ void Sin::read( std::istream& input )
 			return;
 
 		while( input.peek() == '#' )
-			input >> str_tail;
+			input >> any_line;
 
-		input >> channel >> str_tail;
+		input >> channel >> any_line;
 	}
 }
 
@@ -53,9 +72,10 @@ void Sin::print( std::ostream& output ) const
 {
 	output <<
 		"#Receive(MHz)\tTransmit(MHz)\tRxTone\tTxTone\tBusy\tScan\tPower\n"
-		"#--------------------------------------------------------------------\n";
-	//for( auto &channel : u.s.channels )
-	//	output << channel << str_tail;
-	for( size_t i = 0; i < 10; i++ )
-		output << u.s.channels[i] << str_tail;
+		"#~~~~~~~~~~~~\t~~~~~~~~~~~~~\t~~~~~~\t~~~~~~\t~~~~\t~~~~\t~~~~~\n";
+
+	for( const auto &channel : u.s.channels )
+		output << channel << any_line;
+	//for( size_t i = 0; i < 10; i++ )
+	//	output << u.s.channels[i] << str_tail;
 }

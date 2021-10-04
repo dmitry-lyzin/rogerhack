@@ -16,6 +16,7 @@ class Sin
 
 public:
 	void load( const char* filename );
+	void save( const char* filename ) const;
 	void read( std::istream& input );
 	void print( std::ostream& output ) const;
 };

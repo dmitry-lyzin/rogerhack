@@ -5,7 +5,7 @@ void Frequency::read( std::istream& input )
 {
 	if( input.peek() == '-' )
 	{
-		input >> someword;
+		input >> any_word;
 		memset( b, 0xFFu, std::size( b ) );
 		return;
 	}

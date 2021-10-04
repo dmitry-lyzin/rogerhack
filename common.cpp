@@ -1,4 +1,4 @@
-﻿#include "common.h"
+#include "common.h"
 
 //----------------------------------------------------------------
 //[[noreturn]] void streamerror( std::istream & input)

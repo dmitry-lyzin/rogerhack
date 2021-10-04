@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <iostream>
 #include <stdint.h>
 #include <stdlib.h>
@@ -67,27 +67,27 @@ inline std::istream& operator>>( std::istream& input, const char* s )
 }
 
 //================================================================
-static class Str_tail {} str_tail;
+static class Any_line {} any_line;
 
 //----------------------------------------------------------------
-inline std::istream& operator>>( std::istream& input, Str_tail s )
+inline std::istream& operator>>( std::istream& input, Any_line s )
 {
 	input.ignore( std::numeric_limits<std::streamsize>::max(), '\n' );
 	return input;
 }
 
 //----------------------------------------------------------------
-inline std::ostream& operator<<( std::ostream& output, Str_tail s )
+inline std::ostream& operator<<( std::ostream& output, Any_line s )
 {
 	output << '\n';
 	return output;
 }
 
 //================================================================
-static class Someword {} someword;
+static class Any_word {} any_word;
 
 //----------------------------------------------------------------
-inline std::istream& operator>>( std::istream& input, Someword s )
+inline std::istream& operator>>( std::istream& input, Any_word s )
 {
 	char c;
 	while( input.get( c))
@@ -100,7 +100,7 @@ inline std::istream& operator>>( std::istream& input, Someword s )
 }
 
 //----------------------------------------------------------------
-inline std::ostream& operator<<( std::ostream& output, Someword s )
+inline std::ostream& operator<<( std::ostream& output, Any_word s )
 {
 	output << "X~X~X";
 	return output;
