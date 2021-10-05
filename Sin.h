@@ -17,18 +17,5 @@ class Sin
 public:
 	void load( const char* filename );
 	void save( const char* filename ) const;
-	void read( std::istream& input );
-	void print( std::ostream& output ) const;
-};
-
-//----------------------------------------------------------------
-inline std::istream& operator>>( std::istream& input, Sin& s )
-{
-	s.read( input ); return input;
-}
-
-//----------------------------------------------------------------
-inline std::ostream& operator<<( std::ostream& output, const Sin& s )
-{
-	s.print( output );	return output;
-}
+	SAMPLE_CLASS
+( Sin )

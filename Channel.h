@@ -17,18 +17,5 @@ class Channel
 	uint8_t xFF;	// хз что, там лежит 0xFF
 
 public:
-	void read( std::istream& input );
-	void print( std::ostream& output ) const;
-};
-
-//----------------------------------------------------------------
-inline std::istream& operator>>( std::istream& input, Channel& s )
-{
-	s.read( input ); return input;
-}
-
-//----------------------------------------------------------------
-inline std::ostream& operator<<( std::ostream& output, const Channel& s )
-{
-	s.print( output );	return output;
-}
+	SAMPLE_CLASS
+( Channel )

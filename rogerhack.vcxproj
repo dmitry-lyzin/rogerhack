@@ -144,7 +144,7 @@
     <ClCompile Include="common.cpp" />
     <ClCompile Include="Flags.cpp" />
     <ClCompile Include="Frequency.cpp" />
-    <ClCompile Include="rogerhack.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Sin.cpp" />
     <ClCompile Include="Tone.cpp" />
   </ItemGroup>

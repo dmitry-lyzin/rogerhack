@@ -12,6 +12,15 @@ using std::cout;
 using std::cerr;
 
 //----------------------------------------------------------------
+#define SAMPLE_CLASS( cls)											\
+	void read( std::istream& input );									\
+	void print( std::ostream& output ) const;								\
+};														\
+inline std::istream& operator>>( std::istream& input,	cls& s )	{ s.read( input ); return input; }	\
+inline std::ostream& operator<<( std::ostream& output,	const cls& s )	{ s.print( output ); return output; }
+
+
+//----------------------------------------------------------------
 inline char bcd1( uint8_t x )	{ return (x & b00001111) + '0';	}
 inline char bcd2( uint8_t x )	{ return (x >> 4) + '0'; 	}
 
