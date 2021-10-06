@@ -19,8 +19,8 @@ void Tone::read( std::istream& input )
 		b[1] |= digital_tone_bit;
 		b[0]  = getdigit( input ) << 4;
 		b[0] |= getdigit( input );
-		int c = input.get();
-		switch( c)
+
+		switch( input.get() )
 		{
 		case 'I':
 			b[1] |= digital_tone_polarity_bit;
@@ -29,7 +29,7 @@ void Tone::read( std::istream& input )
 			b[1] &= ~digital_tone_polarity_bit;
 			break;
 		default:
-			input.putback( c );
+			input.unget();
 			streamerror( input );
 			break;
 		}
@@ -46,15 +46,14 @@ void Tone::read( std::istream& input )
 	{
 		if( !isdigit( c ) )
 		{
-			input.putback( c );
+			input.unget();
 			break;
 		}
 		if( p < buf + std::size( buf ) )
 			*p++ = c - '0';
 	}
 
-	if( ! can_to_get( input, '.' ) )
-		streamerror( input );
+	input >> '.';
 
 	b[0]  = getdigit( input );
 	b[0] |= (*--p) << 4;

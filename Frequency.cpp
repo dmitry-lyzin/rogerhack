@@ -20,15 +20,14 @@ void Frequency::read( std::istream& input )
 	{
 		if( !isdigit( c ) )
 		{
-			input.putback( c );
+			input.unget();
 			break;
 		}
 		if( p < buf + std::size( buf ) )
 			*p++ = c - '0';
 	}
 
-	if( ! can_to_get( input, '.' ))
-		streamerror( input );
+	input >> '.';
 
 	memset( this, 0, sizeof( *this ) );
 	b[2] = (*--p) << 4;
@@ -40,7 +39,7 @@ void Frequency::read( std::istream& input )
 	{
 		if( !isdigit( c ) )
 		{
-			input.putback( c );
+			input.unget();
 			break;
 		}
 
@@ -70,8 +69,7 @@ void Frequency::print( std::ostream& output ) const
 	if( '0' != c )
 		output << c;
 
-	output
-		<< bcd1( b[3] )
+	output	<< bcd1( b[3] )
 		<< bcd2( b[2] )
 		<< '.'
 		<< bcd1( b[2] )

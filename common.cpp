@@ -22,7 +22,7 @@ uint8_t getdigit( std::istream& input )
 	if( isdigit( c ) )
 		return c - '0';
 
-	input.putback( c );
+	input.unget();
 	streamerror( input );
 }
 
@@ -35,8 +35,8 @@ bool can_to_get( std::istream& input, const char* s )
 		if( input.peek() != *p++ )
 		{
 			--p;
-			while( p > s )
-				input.putback( *--p );
+			for( int i = p - s; i > 0; --i )
+				input.unget();
 			return false;
 		}
 		input.ignore();

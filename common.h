@@ -104,7 +104,7 @@ inline std::istream& operator>>( std::istream& input, Any_word s )
 		if( !isgraph( c ) )
 			break;
 	}
-	input.putback( c );
+	input.unget();
 	return input;
 }
 
