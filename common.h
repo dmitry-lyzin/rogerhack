@@ -11,6 +11,8 @@ using std::cin;
 using std::cout;
 using std::cerr;
 
+#define fatal(x) do { perror( x); exit( EXIT_FAILURE); } while (0)
+
 //----------------------------------------------------------------
 #define SAMPLE_CLASS( cls)											\
 	void read( std::istream& input );									\

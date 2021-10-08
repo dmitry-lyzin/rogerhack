@@ -67,6 +67,8 @@ int main( int argc, const char* argv[] )
 			else
 			{
 				fs.open( optarg, std::fstream::out | std::fstream::trunc );
+				if( ! fs.is_open())
+					fatal( optarg );
 				fs << SIN;
 				fs.close();
 			}
@@ -78,6 +80,8 @@ int main( int argc, const char* argv[] )
 			else
 			{
 				fs.open( optarg, std::fstream::in );
+				if( !fs.is_open() )
+					fatal( optarg );
 				fs >> SIN;
 				fs.close();
 			}
