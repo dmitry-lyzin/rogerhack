@@ -11,18 +11,52 @@ add_executable ("rogerhack" main.cpp binary.h BitField.cpp BitField.h Channel.cp
 # Включить поддержку тестирования:
 enable_testing()
 
-# Добавить тесты:
-add_test(FirstTest rogerhack -x)
-#add_test(SecondTest rogerhack -54 -785)
-#add_test(ThirdTest rogerhack 85234)
-
 set(MULTIPLY_TIMEOUT 1)
+set(testfiles ${CMAKE_CURRENT_SOURCE_DIR}/testfiles)
 
-# Установить поведение тестов:
-#set_tests_properties(FirstTest SecondTest ThirdTest
-set_tests_properties(FirstTest
-PROPERTIES TIMEOUT ${MULTIPLY_TIMEOUT})
+#--------------------------------------
+#add_test(Unknown_option rogerhack -x)
+#set_tests_properties(Unknown_option PROPERTIES
+#	PASS_REGULAR_EXPRESSION "Unknown option -x")
 
-set_tests_properties(FirstTest PROPERTIES
-PASS_REGULAR_EXPRESSION "Unknown option -x"
-FAIL_REGULAR_EXPRESSION "Error!")
+# CMakeFiles - это папка
+add_test(write_to_file_error1 rogerhack -p CMakeFiles)
+set_tests_properties(write_to_file_error1 PROPERTIES
+	 WILL_FAIL TRUE
+)
+add_test(write_to_file_error2 rogerhack -s CMakeFiles)
+set_tests_properties(write_to_file_error2 PROPERTIES
+	WILL_FAIL TRUE
+)
+
+#--------------------------------------
+# 
+#
+add_test(empty_sin_save rogerhack -s 1.sin)
+add_test(empty_sin_correct diff 1.sin ${testfiles}/ROGER_KP-23_empty.sin)
+set_tests_properties(empty_sin_correct PROPERTIES
+	DEPENDS empty_sin_save
+	REQUIRED_FILES ${testfiles}/ROGER_KP-23_empty.sin
+)
+
+
+#--------------------------------------
+# load-print-read-save diff
+#
+set(sinfile "test1.sin")
+
+add_test(load_print rogerhack -l ${testfiles}/${sinfile} -p ${sinfile}.txt)
+set_tests_properties(load_print PROPERTIES
+	REQUIRED_FILES ${testfiles}/${sinfile}
+)
+
+add_test(read_save rogerhack -r ${sinfile}.txt -s ${sinfile})
+set_tests_properties(read_save PROPERTIES
+	DEPENDS load_print
+	REQUIRED_FILES ${sinfile}.txt
+)
+
+add_test(load_print_read_save_diff diff ${testfiles}/${sinfile} ${sinfile})
+set_tests_properties(load_print_read_save_diff PROPERTIES
+	DEPENDS read_save
+)
