@@ -35,7 +35,7 @@ bool can_to_get( std::istream& input, const char* s )
 		if( input.peek() != *p++ )
 		{
 			--p;
-			for( int i = p - s; i > 0; --i )
+			for( size_t i = p - s; i > 0; --i )
 				input.unget();
 			return false;
 		}
