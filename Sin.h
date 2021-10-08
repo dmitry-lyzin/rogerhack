@@ -19,3 +19,6 @@ public:
 	void save( const char* filename ) const;
 	SAMPLE_CLASS
 ( Sin )
+
+//----------------------------------------------------------------
+extern Sin& SIN;

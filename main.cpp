@@ -9,12 +9,10 @@
 #endif
 
 #include "Sin.h"
-#include "ROGER_KP_23_empty.h"
-Sin& SIN = ROGER_KP_23_empty.sin;
-
 
 NO_RETURN void usage( const char* cmd )
 {
+	// нету в студии basename'а...
 	size_t cmdlen = strlen( cmd );
 	cmd += cmdlen;
 	for( ; cmdlen > 0; --cmdlen )
@@ -43,44 +41,41 @@ NO_RETURN void usage( const char* cmd )
 }
 
 //----------------------------------------------------------------
+inline bool is_minus( const char* s )
+{
+	return( '-' == s[0] && '\0' == s[1] );
+}
+
+//----------------------------------------------------------------
 int main( int argc, const char* argv[] )
 {
 	setlocale( LC_ALL, "" );
+
 	const char* cmd = argv[0];
 	if( argc == 1 )
 		usage( cmd );
 
-	enum { encode = 1, decode = 2};
-
+	enum { encode = 1, decode = 2, test = 4 };
 	int xxcode = 0;
 
 	const char*  input = "-";
 	const char* output = "-";
-	int c;
 
-	while( (c = getopt( argc, argv, "dei:o:h" )) != -1 )
+	while( true)
 	{
-		switch( c )
+		switch( getopt( argc, argv, "dei:o:th" ) )
 		{
-		case 'd':
-			xxcode |= decode;
-			break;
-		case 'e':
-			xxcode |= encode;
-			break;
-		case 'i':
-			input = optarg;
-			break;
-		case 'o':
-			output = optarg;
-			break;
-		case 'h':
-			usage( cmd );
-			break;
-		default:
-			exit( EXIT_FAILURE );
+		case  -1: goto loopend;		break;
+		case 'd': xxcode |= decode;	break;
+		case 'e': xxcode |= encode;	break;
+		case 'i': input  = optarg;	break;
+		case 'o': output = optarg;	break;
+		case 't': xxcode |= test;	break;
+		case 'h': usage( cmd );		break;
+		default: exit( EXIT_FAILURE );
 		}
 	}
+	loopend:
 
 	for( int i = optind; i < argc; i++ )
 		fprintf( stderr, "Non-option argument %s\n", argv[i] );
@@ -91,7 +86,7 @@ int main( int argc, const char* argv[] )
 	{
 	case decode:
 		SIN.load( input );
-		if( '-' == output[0] && '\0' == output[1] )
+		if( is_minus( output) )
 			cout << SIN;
 		else
 		{
@@ -103,7 +98,7 @@ int main( int argc, const char* argv[] )
 		break;
 
 	case encode:
-		if( '-' == input[0] && '\0' == input[1] )
+		if( is_minus( input) )
 			cin >> SIN;
 		else
 		{
@@ -119,6 +114,14 @@ int main( int argc, const char* argv[] )
 		fprintf( stderr, "Illegal combination of options -d and -e\n" );
 		exit( EXIT_FAILURE );
 		break;
+
+	case test:
+		if( !is_minus( output ) )
+		{
+			SIN.save( output );
+			exit( EXIT_SUCCESS );
+		}
+		//break;
 
 	default:
 		fprintf( stderr, "Not present options neither -d nor -e\n" );

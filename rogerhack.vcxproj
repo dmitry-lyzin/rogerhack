@@ -157,7 +157,6 @@
     <ClInclude Include="Flags.h" />
     <ClInclude Include="Frequency.h" />
     <ClInclude Include="getopt.h" />
-    <ClInclude Include="ROGER_KP_23_empty.h" />
     <ClInclude Include="Sin.h" />
     <ClInclude Include="Tone.h" />
   </ItemGroup>
