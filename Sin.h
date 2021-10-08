@@ -3,9 +3,8 @@
 #include "Channel.h"
 
 //----------------------------------------------------------------
-class Sin
+struct Sin
 {
-public:
 	union
 	{
 		uint8_t buf[2048];

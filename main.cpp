@@ -25,17 +25,17 @@ NO_RETURN void usage( const char* cmd )
 	}
 
 	fprintf( stderr,
-		"Usage:  %s [-d|-e] [-i input_file] [-o output_file]\n"
+		"Usage:  %s [-h] [-l file] [-s file] [-r file] [-p file]\n"
 		"\n"
 		"Parameters:\n"
-		"	-d		Decode from sin to text\n"
-		"	-e		Encode from text to sin\n"
-		"	-i file		Input file\n"
-		"	-o file		Output file\n"
+		"	-l file		Load file.sin\n"
+		"	-s file		Save file.sin\n"
+		"	-r file		Read text file\n"
+		"	-p file		Print text file\n"
 		"	-h		Print %s usage\n"
 		"\n"
 		"example:\n"
-		"	%s -d -i ROGER_KP-23.sin -o ROGER_KP-23.txt\n", cmd, cmd, cmd
+		"	%s -l ROGER_KP-23.sin -p ROGER_KP-23.txt\n", cmd, cmd, cmd
 		);
 	exit( EXIT_FAILURE );
 }
@@ -55,77 +55,47 @@ int main( int argc, const char* argv[] )
 	if( argc == 1 )
 		usage( cmd );
 
-	enum { encode = 1, decode = 2, test = 4 };
-	int xxcode = 0;
-
-	const char*  input = "-";
-	const char* output = "-";
-
+	int exit_code = EXIT_SUCCESS;
+	std::fstream fs;
 	while( true)
 	{
-		switch( getopt( argc, argv, "dei:o:th" ) )
+		switch( getopt( argc, argv, "hl:s:p:r:" ) )
 		{
-		case  -1: goto loopend;		break;
-		case 'd': xxcode |= decode;	break;
-		case 'e': xxcode |= encode;	break;
-		case 'i': input  = optarg;	break;
-		case 'o': output = optarg;	break;
-		case 't': xxcode |= test;	break;
+		case 'p':
+			if( is_minus( optarg ) )
+				cout << SIN;
+			else
+			{
+				fs.open( optarg, std::fstream::out | std::fstream::trunc );
+				fs << SIN;
+				fs.close();
+			}
+			break;
+
+		case 'r':
+			if( is_minus( optarg ) )
+				cin >> SIN;
+			else
+			{
+				fs.open( optarg, std::fstream::in );
+				fs >> SIN;
+				fs.close();
+			}
+			break;
+
+		case -1:
+			for( int i = optind; i < argc; i++ )
+			{
+				fprintf( stderr, "Non-option argument %s\n", argv[i] );
+				exit_code = EXIT_FAILURE;
+			}
+			exit( exit_code );
+			break;
+
+		case 'l': SIN.load( optarg );	break;
+		case 's': SIN.save( optarg );	break;
 		case 'h': usage( cmd );		break;
-		default: exit( EXIT_FAILURE );
+		default:  exit( EXIT_FAILURE );	break;
 		}
-	}
-	loopend:
-
-	for( int i = optind; i < argc; i++ )
-		fprintf( stderr, "Non-option argument %s\n", argv[i] );
-
-
-	std::fstream fs;
-	switch( xxcode )
-	{
-	case decode:
-		SIN.load( input );
-		if( is_minus( output) )
-			cout << SIN;
-		else
-		{
-			fs.open( output, std::fstream::out | std::fstream::trunc );
-			fs << SIN;
-			fs.close();
-		}
-		exit( EXIT_SUCCESS );
-		break;
-
-	case encode:
-		if( is_minus( input) )
-			cin >> SIN;
-		else
-		{
-			fs.open( input, std::fstream::in );
-			fs >> SIN;
-			fs.close();
-		}
-		SIN.save( output );
-		exit( EXIT_SUCCESS );
-		break;
-
-	case decode | encode:
-		fprintf( stderr, "Illegal combination of options -d and -e\n" );
-		exit( EXIT_FAILURE );
-		break;
-
-	case test:
-		if( !is_minus( output ) )
-		{
-			SIN.save( output );
-			exit( EXIT_SUCCESS );
-		}
-		//break;
-
-	default:
-		fprintf( stderr, "Not present options neither -d nor -e\n" );
-		exit( EXIT_FAILURE );
-		break;
 	}
 }
