@@ -55,27 +55,11 @@ inline bool operator>>=( std::istream& input, const char c )
 }
 
 //----------------------------------------------------------------
-inline std::istream& operator>>( std::istream& input, const char c )
-{
-	if( input.peek() != c )
-		streamerror( input );
-
-	input.ignore();
-	return input;
-}
-
-//----------------------------------------------------------------
 bool operator>>=( std::istream& input, const char* s );
 
 //----------------------------------------------------------------
-inline std::istream& operator>>( std::istream& input, const char* s )
-{
-	if( input >>= s )
-		return input;
-
-	streamerror( input );
-	return input;
-}
+std::istream& operator>>( std::istream& input, const char c );
+std::istream& operator>>( std::istream& input, const char* s );
 
 //================================================================
 static class Any_line {} any_line;
@@ -113,6 +97,6 @@ inline std::istream& operator>>( std::istream& input, Any_word s )
 //----------------------------------------------------------------
 inline std::ostream& operator<<( std::ostream& output, Any_word s )
 {
-	output << "X~X~X";
+	output << 'X';
 	return output;
 }

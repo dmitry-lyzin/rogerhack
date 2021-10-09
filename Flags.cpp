@@ -2,7 +2,7 @@
 #include "BitField.h"
 
 //----------------------------------------------------------------
-const char* busy2str [] = { "OFF",	"QT/DQT", "Carrier", "?" };
+const char* busy2str [] = { "OFF",	"QT/DQT", "Carrier", "" };
 const char* scan2str [] = { "Delete",	"Add"	};
 const char* power2str[] = { "Low",	"High"	};
 

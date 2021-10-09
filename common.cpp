@@ -5,7 +5,7 @@
 NO_RETURN void streamerror( std::istream& input )
 {
 	input.clear();
-	cerr << "wrong read!\n===================>";
+	cerr << "\n===================>";
 	int c = input.get();
 	while( c > 0 )
 	{
@@ -43,4 +43,28 @@ bool operator>>=( std::istream& input, const char* s )
 		input.ignore();
 	}
 	return true;
+}
+
+//----------------------------------------------------------------
+std::istream& operator>>( std::istream& input, const char* s )
+{
+	if( input >>= s )
+		return input;
+
+	cerr << "Wrong read! Wait word: \"" << s << '"';
+	streamerror( input );
+	return input;
+}
+
+//----------------------------------------------------------------
+std::istream& operator>>( std::istream& input, const char c )
+{
+	if( input.peek() == c )
+	{
+		input.ignore();
+		return input;
+	}
+	cerr << "Wrong read! Wait char: \"" << c << '"';
+	streamerror( input );
+	return input;
 }
