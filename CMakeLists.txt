@@ -43,20 +43,44 @@ set_tests_properties(empty_sin_correct PROPERTIES
 #--------------------------------------
 # load-print-read-save diff
 #
-set(sinfile "test1.sin")
+set(testfile "test1")
 
-add_test(load_print rogerhack -l ${testfiles}/${sinfile} -p ${sinfile}.txt)
+add_test(load_print rogerhack -l ${testfiles}/${testfile}.sin -p ${testfile}.txt)
 set_tests_properties(load_print PROPERTIES
-	REQUIRED_FILES ${testfiles}/${sinfile}
+	REQUIRED_FILES ${testfiles}/${testfile}.sin
 )
-
-add_test(read_save rogerhack -r ${sinfile}.txt -s ${sinfile})
-set_tests_properties(read_save PROPERTIES
+add_test(test_printed diff ${testfiles}/${testfile}.txt ${testfile}.txt)
+set_tests_properties(test_printed PROPERTIES
 	DEPENDS load_print
-	REQUIRED_FILES ${sinfile}.txt
+	REQUIRED_FILES ${testfiles}/${testfile}.txt
 )
-
-add_test(load_print_read_save_diff diff ${testfiles}/${sinfile} ${sinfile})
+add_test(read_save rogerhack -r ${testfile}.txt -s ${testfile}.sin)
+set_tests_properties(read_save PROPERTIES
+	DEPENDS test_printed
+	REQUIRED_FILES ${testfile}.txt
+)
+add_test(load_print_read_save_diff diff ${testfiles}/${testfile}.sin ${testfile}.sin)
 set_tests_properties(load_print_read_save_diff PROPERTIES
 	DEPENDS read_save
+)
+
+#--------------------------------------
+# тест загрузки из текст
+#
+add_test(bed_text_1 rogerhack -r ${testfiles}/bed1.txt)
+set_tests_properties(bed_text_1 PROPERTIES
+	REQUIRED_FILES ${testfiles}/bed1.txt
+	WILL_FAIL TRUE
+)
+
+add_test(bed_text_2 rogerhack -r ${testfiles}/bed2.txt)
+set_tests_properties(bed_text_2 PROPERTIES
+	REQUIRED_FILES ${testfiles}/bed2.txt
+	WILL_FAIL TRUE
+)
+
+add_test(bed_text_3 rogerhack -r ${testfiles}/bed3.txt)
+set_tests_properties(bed_text_3 PROPERTIES
+	REQUIRED_FILES ${testfiles}/bed3.txt
+	WILL_FAIL TRUE
 )
