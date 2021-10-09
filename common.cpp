@@ -27,7 +27,7 @@ uint8_t getdigit( std::istream& input )
 }
 
 //----------------------------------------------------------------
-bool can_to_get( std::istream& input, const char* s )
+bool operator>>=( std::istream& input, const char* s )
 {
 	const char* p = s;
 	while( *p )

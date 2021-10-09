@@ -6,14 +6,14 @@
 //----------------------------------------------------------------
 void Tone::read( std::istream& input )
 {
-	if( can_to_get( input, "OFF" ) )
+	if( input >>= "OFF" )
 	{
 		b[0] = 0xFFu;
 		b[1] = 0xFFu;
 		return;
 	}
 
-	if( can_to_get( input, 'D') )
+	if( input >>= 'D' )
 	{
 		b[1]  = getdigit( input );
 		b[1] |= digital_tone_bit;

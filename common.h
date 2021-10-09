@@ -45,10 +45,7 @@ NO_RETURN void streamerror( std::istream& input );
 uint8_t getdigit( std::istream& input );
 
 //----------------------------------------------------------------
-bool can_to_get( std::istream& input, const char* s );
-
-//----------------------------------------------------------------
-inline bool can_to_get( std::istream& input, const char c )
+inline bool operator>>=( std::istream& input, const char c )
 {
 	if( input.peek() != c )
 		return false;
@@ -68,9 +65,12 @@ inline std::istream& operator>>( std::istream& input, const char c )
 }
 
 //----------------------------------------------------------------
+bool operator>>=( std::istream& input, const char* s );
+
+//----------------------------------------------------------------
 inline std::istream& operator>>( std::istream& input, const char* s )
 {
-	if( can_to_get( input, s ) )
+	if( input >>= s )
 		return input;
 
 	streamerror( input );
