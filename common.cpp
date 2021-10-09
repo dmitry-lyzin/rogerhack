@@ -4,12 +4,13 @@
 //[[noreturn]] void streamerror( std::istream & input)
 NO_RETURN void streamerror( std::istream& input )
 {
+	input.clear();
 	cerr << "wrong read!\n===================>";
-	while( !cin.eof() )
+	int c = input.get();
+	while( c > 0 )
 	{
-		char c;
-		cin.get( c );
 		cerr.put( c );
+		c = input.get();
 	}
 	cerr << "<===================\n";
 	exit( EXIT_FAILURE );
