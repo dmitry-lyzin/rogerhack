@@ -100,3 +100,44 @@ inline std::ostream& operator<<( std::ostream& output, Any_word s )
 	output << 'X';
 	return output;
 }
+
+//================================================================
+class Digit_char
+{
+	char c;
+public:
+	Digit_char(			) : c( '\0'	) {};
+	Digit_char( const char c_	) : c(  c_-'0'	) {};
+
+	operator char() const { return c; };
+
+	bool mayread( std::istream& input )
+	{
+		int c0 = input.peek();
+		if( !isdigit( c0 ) )
+			return false;
+
+		c = c0 - '0';
+		input.ignore();
+		return true;
+	};
+
+	void read( std::istream& input )
+	{
+		int c0 = input.peek();
+		if( isdigit( c0 ) )
+		{
+			c = c0 - '0';
+			input.ignore();
+			return;
+		}
+		cerr << "Wrong read! Char: \"" << char( c0 ) << "\" not is digit";
+		streamerror( input );
+	};
+	void print( std::ostream& output ) const { output << (c + '0'); };
+};
+
+//----------------------------------------------------------------
+inline bool		operator>>=( std::istream& input,	Digit_char &c) { return c.mayread( input );		}
+inline std::istream&	operator>> ( std::istream& input,	Digit_char &c) { c.read( input );	return input;	}
+inline std::ostream&	operator<< ( std::ostream& output, const Digit_char c) { c.print( output );	return output;	}
