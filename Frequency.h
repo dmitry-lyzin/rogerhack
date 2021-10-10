@@ -1,10 +1,11 @@
 #pragma once
 #include "common.h"
+#include "BCDnum.h"
 
 //----------------------------------------------------------------
 class Frequency
 {
-	uint8_t b[4];
+	BCDnum< uint32_t, 5, false> b;
 public:
 	SAMPLE_CLASS
 ( Frequency )
