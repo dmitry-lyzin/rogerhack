@@ -2,7 +2,7 @@
 #include "common.h"
 #include "BCDnum.h"
 
-static constexpr const char fmt[] = "-.50";
+static constexpr const char fmt[] = "-8.50";
 
 //----------------------------------------------------------------
 class Frequency : public BCDnum< uint32_t, fmt>
