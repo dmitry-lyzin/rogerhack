@@ -17,17 +17,6 @@ NO_RETURN void streamerror( std::istream& input )
 }
 
 //----------------------------------------------------------------
-uint8_t getdigit( std::istream& input )
-{
-	uint8_t c = input.get();
-	if( isdigit( c ) )
-		return c - '0';
-
-	input.unget();
-	streamerror( input );
-}
-
-//----------------------------------------------------------------
 bool operator>>=( std::istream& input, const char* s )
 {
 	const char* p = s;

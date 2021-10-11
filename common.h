@@ -23,11 +23,6 @@ inline std::ostream& operator<<( std::ostream& output,	const cls& s )	{ s.print(
 
 
 //----------------------------------------------------------------
-inline char bcd1( uint8_t x )	{ return (x & b00001111) + '0';	}
-inline char bcd2( uint8_t x )	{ return (x >> 4) + '0'; 	}
-
-
-//----------------------------------------------------------------
 #ifdef __GNUC__
 #define NO_RETURN __attribute__((noreturn))
 #elif __MINGW32__
@@ -42,10 +37,8 @@ NO_RETURN void streamerror( std::istream& input );
 
 
 //----------------------------------------------------------------
-uint8_t getdigit( std::istream& input );
-
-//----------------------------------------------------------------
-inline bool operator>>=( std::istream& input, const char c )
+inline
+bool operator>>=( std::istream& input, const char c )
 {
 	if( input.peek() != c )
 		return false;
@@ -53,8 +46,6 @@ inline bool operator>>=( std::istream& input, const char c )
 	input.ignore();
 	return true;
 }
-
-//----------------------------------------------------------------
 bool operator>>=( std::istream& input, const char* s );
 
 //----------------------------------------------------------------
@@ -63,15 +54,11 @@ std::istream& operator>>( std::istream& input, const char* s );
 
 //================================================================
 static class Any_line {} any_line;
-
-//----------------------------------------------------------------
 inline std::istream& operator>>( std::istream& input, Any_line s )
 {
 	input.ignore( std::numeric_limits<std::streamsize>::max(), '\n' );
 	return input;
 }
-
-//----------------------------------------------------------------
 inline std::ostream& operator<<( std::ostream& output, Any_line s )
 {
 	output << '\n';
@@ -80,8 +67,6 @@ inline std::ostream& operator<<( std::ostream& output, Any_line s )
 
 //================================================================
 static class Any_word {} any_word;
-
-//----------------------------------------------------------------
 inline std::istream& operator>>( std::istream& input, Any_word s )
 {
 	char c;
@@ -93,8 +78,6 @@ inline std::istream& operator>>( std::istream& input, Any_word s )
 	input.unget();
 	return input;
 }
-
-//----------------------------------------------------------------
 inline std::ostream& operator<<( std::ostream& output, Any_word s )
 {
 	output << 'X';
