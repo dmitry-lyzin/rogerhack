@@ -1,36 +1,36 @@
 #pragma once
 #include "common.h"
 
-//----------------------------------------------------------------
-template< typename T, size_t Num_after_dot, bool Trailing_null>
-class BCDnum
+#define TEMPL template< typename T, const char Fmt[]>
+#define THIS  BCDnum< T, Fmt>
+/* Описание Fmt
+	Fmt[0] - ведущий символ, если '-' ничего не выводить, число прижмётся к левому краю
+	Fmt[1] - символ-разделитель целой и дробной частей
+	Fmt[2] - точность (длина дробной части)
+	Fmt[3] - завершающий символ, если '-' ничего не выводить
+*/
+TEMPL class BCDnum
 {
+protected:
 	T value;
-
-	static const bool trailing_null = false;
-	static const size_t num_after_dot;
-	static const T mask;
+private:
 	enum { bitshift = sizeof( value ) * 8 - 4 };
+
+	static constexpr const char	leading_char	= Fmt[0];
+	static constexpr const char	dot_char	= Fmt[1];
+	static constexpr const size_t	precision	= Fmt[2] - '0';
+	static constexpr const char	trailing_char	= Fmt[3];
+	static constexpr const T	mask = 0xfu << THIS::bitshift;
 
 public:
 	BCDnum( const T value_) : value( value_) {};
-	operator T() const { return value; };
-	void read( std::istream& input );									
+
+	void read ( std::istream& input );									
 	void print( std::ostream& output ) const;								
-};														
-
-template< typename T, size_t Num_after_dot, bool Trailing_null>
-const bool BCDnum< T, Num_after_dot, Trailing_null>::trailing_null = Trailing_null;
-
-template< typename T, size_t Num_after_dot, bool Trailing_null>
-const size_t BCDnum< T, Num_after_dot, Trailing_null>::num_after_dot = Num_after_dot;
-
-template< typename T, size_t Num_after_dot, bool Trailing_null>
-const T BCDnum< T, Num_after_dot, Trailing_null>::mask = 0xfu << BCDnum< T, Num_after_dot, Trailing_null>::bitshift;
+};
 
 //----------------------------------------------------------------
-template< typename T, size_t Num_after_dot, bool Trailing_null>
-void BCDnum< T, Num_after_dot, Trailing_null>::read( std::istream& input )
+TEMPL void THIS::read( std::istream& input )
 {
 	Digit_char c;
 	input >> c;
@@ -40,9 +40,9 @@ void BCDnum< T, Num_after_dot, Trailing_null>::read( std::istream& input )
 		value <<= 4;
 		value |= c;
 	}
-	input >> '.';
+	input >> dot_char;
 
-	size_t i = num_after_dot;
+	size_t i = precision;
 	for( ; i > 0; --i )
 	{
 		if( !(input >>= c) )
@@ -55,27 +55,34 @@ void BCDnum< T, Num_after_dot, Trailing_null>::read( std::istream& input )
 }
 
 //----------------------------------------------------------------
-template< typename T, size_t Num_after_dot, bool Trailing_null>
-void BCDnum< T, Num_after_dot, Trailing_null>::print( std::ostream& output ) const
+TEMPL void THIS::print( std::ostream& output ) const
 {
 	T tmp = value;
-	bool tn = trailing_null;
+	char lc = leading_char;
 	for( size_t i = sizeof( value ) * 2; i > 0; --i )
 	{
-		if( num_after_dot == i )
-			output.put( '.' );
+		if( precision == i )
+			output.put( dot_char );
+
 		char c = (tmp & mask) >> bitshift;
 		tmp <<= 4;
-		if( tn || c )
+		if( c )
 		{
 			output.put( c + '0' );
-			tn = true;
+			lc = '\0';
+			continue;
 		}
+		switch( lc )
+		{
+		case '\0':	output.put( '0');	break;
+		case '-':				break;
+		default:	output.put( lc );	break;
+		};
 	}
 }
 
 //----------------------------------------------------------------
-template< typename T, size_t Num_after_dot, bool Trailing_null>
-inline std::istream& operator>>( std::istream& input,		BCDnum< T, Num_after_dot, Trailing_null>& s ) { s.read ( input ); return input; }
-template< typename T, size_t Num_after_dot, bool Trailing_null>
-inline std::ostream& operator<<( std::ostream& output, const	BCDnum< T, Num_after_dot, Trailing_null>  s ) { s.print( output); return output; }
+TEMPL inline std::istream& operator>>( std::istream& input,	   THIS& s ) { s.read ( input ); return input; }
+TEMPL inline std::ostream& operator<<( std::ostream& output, const THIS  s ) { s.print( output); return output; }
+
+#undef TEMPL
