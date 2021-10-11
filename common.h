@@ -87,40 +87,39 @@ inline std::ostream& operator<<( std::ostream& output, Any_word s )
 //================================================================
 class Digit_char
 {
-	char c;
 public:
-	Digit_char(			) : c( '\0'	) {};
-	Digit_char( const char c_	) : c(  c_-'0'	) {};
+	char value;
 
-	operator char() const { return c; };
+	Digit_char(			) : value(  '\0') {};
+	Digit_char( const char c	) : value( c-'0') {};
 
 	bool mayread( std::istream& input )
 	{
-		int c0 = input.peek();
-		if( !isdigit( c0 ) )
+		int c = input.peek() - '0';
+		if( c < 0 || c > 9 )
 			return false;
 
-		c = c0 - '0';
+		value = c;
 		input.ignore();
 		return true;
 	};
 
 	void read( std::istream& input )
 	{
-		int c0 = input.peek();
-		if( isdigit( c0 ) )
+		int c = input.peek() - '0';
+		if( 0 <= c && c <= 9 )
 		{
-			c = c0 - '0';
+			value = c;
 			input.ignore();
 			return;
 		}
-		cerr << "Wrong read! Char: \"" << char( c0 ) << "\" not is digit";
+		cerr << "Wrong read! Char: \"" << char( c ) << "\" not is digit";
 		streamerror( input );
 	};
-	void print( std::ostream& output ) const { output << (c + '0'); };
+	void print( std::ostream& output ) const { output << (value + '0'); };
 };
 
 //----------------------------------------------------------------
-inline bool		operator>>=( std::istream& input,	Digit_char &c) { return c.mayread( input );		}
-inline std::istream&	operator>> ( std::istream& input,	Digit_char &c) { c.read( input );	return input;	}
-inline std::ostream&	operator<< ( std::ostream& output, const Digit_char c) { c.print( output );	return output;	}
+inline bool		operator>>=( std::istream& input,	Digit_char &value) { return value.mayread( input );		}
+inline std::istream&	operator>> ( std::istream& input,	Digit_char &value) { value.read( input );	return input;	}
+inline std::ostream&	operator<< ( std::ostream& output, const Digit_char value) { value.print( output );	return output;	}

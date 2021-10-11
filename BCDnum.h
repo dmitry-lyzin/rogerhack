@@ -36,11 +36,11 @@ TEMPL void THIS::read( std::istream& input )
 {
 	Digit_char c;
 	input >> c;
-	value = c;
+	value = c.value;
 	while( input >>= c )
 	{
 		value <<= 4;
-		value |= c;
+		value |= c.value;
 	}
 
 	size_t i = precision;
@@ -54,7 +54,7 @@ TEMPL void THIS::read( std::istream& input )
 			break;
 
 		value <<= 4;
-		value |= c;
+		value |= c.value;
 	}
 	value <<= (4 * i);
 
