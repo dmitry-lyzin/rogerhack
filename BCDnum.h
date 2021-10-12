@@ -17,30 +17,29 @@ protected:
 	T value;
 private:
 	static constexpr const char	leading_char	= Fmt[0];
-	static constexpr const size_t	len		= Fmt[1] - '0';
+	static constexpr const size_t	length		= Fmt[1] - '0';
 	static constexpr const char	dot_char	= Fmt[2];
 	static constexpr const size_t	precision	= Fmt[3] - '0';
 	static constexpr const char	trailing_char	= Fmt[4];
 
-	static constexpr const size_t	shift	= len * 4 - 4;
-	static constexpr const T	mask	= 0xfu << THIS::shift;
-public:
-	BCDnum( const T value_) : value( value_) {};
+	static constexpr const size_t	shift	= (length - 1) * 4;
+	static constexpr const T	mask	= 0xfu << shift;
 
-	void read ( std::istream& input );									
-	void print( std::ostream& output ) const;								
+public:
+	void read ( std::istream& input );
+	void print( std::ostream& output ) const;
 };
 
 //----------------------------------------------------------------
 TEMPL void THIS::read( std::istream& input )
 {
-	Digit_char c;
-	input >> c;
-	value = c.value;
-	while( input >>= c )
+	Digit_char dc;
+	input >> dc;
+	value = dc.value;
+	while( input >>= dc )
 	{
 		value <<= 4;
-		value |= c.value;
+		value |= dc.value;
 	}
 
 	size_t i = precision;
@@ -50,11 +49,11 @@ TEMPL void THIS::read( std::istream& input )
 
 	for( ; i > 0; --i )
 	{
-		if( !(input >>= c) )
+		if( !(input >>= dc) )
 			break;
 
 		value <<= 4;
-		value |= c.value;
+		value |= dc.value;
 	}
 	value <<= (4 * i);
 
@@ -62,24 +61,32 @@ TEMPL void THIS::read( std::istream& input )
 TEMPL void THIS::print( std::ostream& output ) const
 {
 	T tmp = value;
-	char lc = leading_char;
-	for( size_t i = len - precision; i > 0; --i )
+	char c;
+	size_t i = length - precision - 1;
+	for( ; i > 0; --i )
 	{
-		char c = (tmp & mask) >> shift;
+		c = (tmp & mask) >> shift;
 		tmp <<= 4;
 		if( c )
 		{
 			output.put( c + '0' );
-			lc = '\0';
-			continue;
+			--i;
+			break;
 		}
-		switch( lc )
-		{
-		case '\0':	output.put( '0');	break;
-		case '-':				break;
-		default:	output.put( lc );	break;
-		};
+		if( leading_char != '-' )
+			output.put( leading_char );
 	}
+
+	for( ; i > 0; --i )
+	{
+		c = (tmp & mask) >> shift;
+		tmp <<= 4;
+		output.put( c + '0' );
+	}
+
+	c = (tmp & mask) >> shift;
+	tmp <<= 4;
+	output.put( c + '0' );
 
 	if( !precision )
 		return;
@@ -95,7 +102,7 @@ TEMPL void THIS::print( std::ostream& output ) const
 				output.put( trailing_char );
 			break;
 		}
-		char c = (tmp & mask) >> shift;
+		c = (tmp & mask) >> shift;
 		tmp <<= 4;
 		output.put( c + '0' );
 	}
