@@ -1,34 +1,39 @@
 #pragma once
 #include "common.h"
 
-#define TEMPL template< typename T, const char Fmt[]>
-#define THIS  BCDnum <T, Fmt>
+#define TEMPL template		\
+< typename T			\
+, const char	leading_char	\
+, const size_t	length		\
+, const char	dot_char	\
+, const size_t	precision	\
+, const char	trailing_char	\
+>
+#define THIS BCDnum <T, leading_char, length, dot_char, precision, trailing_char>
 
-/* Описание Fmt
-	Fmt[0] - ведущий символ, если '-' ничего не выводить, число прижмётся к левому краю
-	Fmt[1] - общая длина числа без символа-разделитель целой и дробной частей
-	Fmt[2] - символ-разделитель целой и дробной частей
-	Fmt[3] - точность (длина дробной части)
-	Fmt[4] - символ вместо завершающих нулей, если '\0' ничего не выводить
-*/
+/** Шаблон класса двоично десятичных (BCD) чисел
+ * 
+ * @param typename T             тип поля для хранения BCD числа
+ * @param char     leading_char  ведущий символ, если '-' ничего не выводить, число прижмётся к левому краю
+ * @param size_t   length        общая длина числа без символа-разделитель целой и дробной частей
+ * @param char     dot_char      символ-разделитель целой и дробной частей
+ * @param size_t   precision     точность (длина дробной части)
+ * @param char     trailing_char символ вместо завершающих нулей, если '\0' ничего не выводить
+ */
 TEMPL class BCDnum
 {
 protected:
 	T value;
 private:
-	static constexpr const char	leading_char	= Fmt[0];
-	static constexpr const size_t	length		= Fmt[1] - '0';
-	static constexpr const char	dot_char	= Fmt[2];
-	static constexpr const size_t	precision	= Fmt[3] - '0';
-	static constexpr const char	trailing_char	= Fmt[4];
-
 	static constexpr const size_t	shift	= (length - 1) * 4;
-	static constexpr const T	mask	= 0xfu << shift;
-
+	static constexpr const T	mask	= 0xf << shift;
 public:
 	void read ( std::istream& input );
 	void print( std::ostream& output ) const;
 };
+TEMPL inline std::istream& operator>>( std::istream& input,        THIS& s ) { s.read ( input );  return input;  }
+TEMPL inline std::ostream& operator<<( std::ostream& output, const THIS& s ) { s.print( output ); return output; }
+
 
 //----------------------------------------------------------------
 TEMPL void THIS::read( std::istream& input )
@@ -56,7 +61,6 @@ TEMPL void THIS::read( std::istream& input )
 		value |= dc.value;
 	}
 	value <<= (4 * i);
-
 }
 TEMPL void THIS::print( std::ostream& output ) const
 {
@@ -108,8 +112,5 @@ TEMPL void THIS::print( std::ostream& output ) const
 	}
 }
 
-//----------------------------------------------------------------
-TEMPL inline std::istream& operator>>( std::istream& input,	   THIS& s ) { s.read ( input ); return input; }
-TEMPL inline std::ostream& operator<<( std::ostream& output, const THIS  s ) { s.print( output); return output; }
-
 #undef TEMPL
+#undef THIS
