@@ -16,6 +16,7 @@ TEMPL class BitField
 protected:
 	T value;
 private:
+	static_assert(!(state_names_len & (state_names_len - 1)), "state_names_len должен == степени двойки");
 	static constexpr const T bitmask = (state_names_len - 1) << bitindex;
 public:
 	void read ( std::istream& input  );
@@ -26,8 +27,6 @@ TEMPL inline std::ostream& operator<<( std::ostream& output, const THIS& s ) { s
 
 TEMPL        void THIS::read ( std::istream& input  )
 {
-	assert(("state_names_len должен == степени двойки", !(state_names_len & (state_names_len - 1)) ));
-
 	for( size_t i = 0; i < state_names_len; i++ )
 	{
 		if( !state_names[i] )
