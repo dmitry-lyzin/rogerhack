@@ -16,7 +16,7 @@ TEMPL class BitField
 protected:
 	T value;
 private:
-	static_assert(!(state_names_len & (state_names_len - 1)), "state_names_len должен == степени двойки");
+	static_assert(!(state_names_len & (state_names_len - 1)), "The state_names_len is a NOT A power of two");
 	static constexpr const T bitmask = (state_names_len - 1) << bitindex;
 public:
 	void read ( std::istream& input  );
