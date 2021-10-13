@@ -14,11 +14,11 @@
 /** Шаблон класса двоично десятичных (BCD) чисел
  * 
  * @param typename T             тип поля для хранения BCD числа
- * @param char     leading_char  ведущий символ, если '-' ничего не выводить, число прижмётся к левому краю
+ * @param char     leading_char  ведущий символ, если 0x0 - ничего не выводить, число прижмётся к левому краю
  * @param size_t   length        общая длина числа без символа-разделитель целой и дробной частей
  * @param char     dot_char      символ-разделитель целой и дробной частей
  * @param size_t   precision     точность (длина дробной части)
- * @param char     trailing_char символ вместо завершающих нулей, если '\0' ничего не выводить
+ * @param char     trailing_char символ вместо завершающих нулей, если 0x0 - ничего не выводить
  */
 TEMPL class BCDnum
 {
@@ -33,7 +33,6 @@ public:
 };
 TEMPL inline std::istream& operator>>( std::istream& input,        THIS& s ) { s.read ( input );  return input;  }
 TEMPL inline std::ostream& operator<<( std::ostream& output, const THIS& s ) { s.print( output ); return output; }
-
 
 //----------------------------------------------------------------
 TEMPL void THIS::read( std::istream& input )
@@ -77,7 +76,7 @@ TEMPL void THIS::print( std::ostream& output ) const
 			--i;
 			break;
 		}
-		if( leading_char != '-' )
+		if( leading_char )
 			output.put( leading_char );
 	}
 
