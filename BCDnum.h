@@ -11,7 +11,8 @@
 >
 #define THIS BCDnum <T, leading_char, length, dot_char, precision, trailing_char>
 
-/** Шаблон класса двоично десятичных (BCD) чисел
+/**class BCDnum <T, leading_char, length, dot_char, precision, trailing_char>
+ * Шаблон класса двоично десятичных (BCD) чисел
  * 
  * @param typename T             тип поля для хранения BCD числа
  * @param char     leading_char  ведущий символ, если 0x0 - ничего не выводить, число прижмётся к левому краю
@@ -31,6 +32,7 @@ public:
 	void read ( std::istream& input );
 	void print( std::ostream& output ) const;
 };
+
 TEMPL inline std::istream& operator>>( std::istream& input,        THIS& s ) { s.read ( input );  return input;  }
 TEMPL inline std::ostream& operator<<( std::ostream& output, const THIS& s ) { s.print( output ); return output; }
 
