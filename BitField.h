@@ -3,56 +3,84 @@
 #include "assert.h"
 
 #define TEMPL template		\
-< typename T			\
-, const char* state_names[]	\
-, const size_t state_names_len	\
-, const size_t bitindex		\
+< typename	Type		\
+, typename	Sample_type	\
+, Sample_type	samples[]	\
+, const size_t	samples_len	\
+, const size_t	bitindex	\
 >
-#define THIS BitField< T, state_names, state_names_len, bitindex>
-// BitField< T, state_names, state_names_len, bitindex>
-// state_names_len должен == степени двойки
+#define THIS BitField< Type, Sample_type, samples, samples_len, bitindex>
+
+/* BitField< Type, samples, samples_len, bitindex>
+ * @param typename	Type		тип поля для хранения ?
+ * @param typename	Sample_type	тип шаблона (const char* | const char)
+ * @param Sample_type	samples[]	массив шаблонов
+ * @param size_t	samples_len	длина массива шаблонов == степени двойки
+ * @param size_t	bitindex	номер бита, считая от 0
+ */
 TEMPL class BitField
 {
+	static_assert( !(samples_len& (samples_len - 1)), "The samples_len is a NOT a power of two");
 protected:
-	T value;
+	Type value;
 private:
-	static_assert(!(state_names_len & (state_names_len - 1)), "The state_names_len is a NOT A power of two");
-	static constexpr const T bitmask = (state_names_len - 1) << bitindex;
+	static constexpr const size_t	bitindex = bitindex;
+	static constexpr const Type	bitmask  = (samples_len - 1) << bitindex;
 public:
-	void read ( std::istream& input  );
-	void print( std::ostream& output ) const;
-};
-TEMPL inline std::istream& operator>>( std::istream& input,        THIS& s ) { s.read ( input ); return input;  }
-TEMPL inline std::ostream& operator<<( std::ostream& output, const THIS& s ) { s.print( output); return output; }
-
-TEMPL        void THIS::read ( std::istream& input  )
-{
-	for( size_t i = 0; i < state_names_len; i++ )
+	operator Type() const	{ return (value & bitmask) >> bitindex;	};
+	operator bool() const	{ return  value & bitmask;		};
+	friend inline BitField& operator |= ( BitField& left, const unsigned int right )
 	{
-		if( !state_names[i] )
+		//left.value &= ~left.bitmask;
+		left.value |= Type( right) << left.bitindex;
+		return left;
+	};
+	bool mayread	( std::istream& input );
+	void read	( std::istream& input  );
+	void print	( std::ostream& output ) const
+	{
+		output << samples[ (value & bitmask) >> bitindex];
+	};
+};
+
+//----------------------------------------------------------------
+TEMPL inline bool	   operator>>=( std::istream& input,        THIS& s ) { return s.mayread( input );	  }
+TEMPL inline std::istream& operator>> ( std::istream& input,        THIS& s ) { s.read ( input ); return input;	  }
+TEMPL inline std::ostream& operator<< ( std::ostream& output, const THIS& s ) { s.print( output ); return output; }
+
+//----------------------------------------------------------------
+TEMPL bool THIS::mayread( std::istream& input )
+{
+	for( size_t i = 0; i < samples_len; i++ )
+	{
+		if( !samples[i] )
 			continue;
-		if( input >>= state_names[i] )
+		if( input >>= samples[i] )
 		{
 			value &= ~bitmask;
-			value |= T(i) << bitindex;
-			return;
+			value |= Type( i ) << bitindex;
+			return true;
 		}
 	}
+	return false;
+}
+
+//----------------------------------------------------------------
+TEMPL void THIS::read( std::istream& input )
+{
+	if( mayread( input ) )
+		return;
 
 	const char* t = "Wrong read! Wait words: \"";
-	for( size_t i = 0; i < state_names_len; i++ )
+	for( size_t i = 0; i < samples_len; i++ )
 	{
-		if( !state_names[i] )
+		if( !samples[i] )
 			continue;
-		cerr << t << state_names[i] << '"';
+		cerr << t << samples[i] << '"';
 		t = " or \"";
 	}
 	streamerror( input );
 }
-TEMPL inline void THIS::print( std::ostream& output ) const
-{
-	output << state_names[(value & bitmask) >> bitindex];
-};
 
 #undef TEMPL
 #undef THIS

@@ -1,8 +1,6 @@
 #include "Tone.h"
 
 #define digital_tone_bit		(b10000000 << 8)
-#define digital_tone_polarity_bit	(b01000000 << 8)
-
 //----------------------------------------------------------------
 void Tone::read( std::istream& input )
 {
@@ -14,22 +12,8 @@ void Tone::read( std::istream& input )
 
 	if( input >>= 'D' )
 	{
-		input >> u.digital_tone;
-
+		input >> u.digital_tone >> u.polarity_bit;
 		u.bin |= digital_tone_bit;
-		switch( input.get() )
-		{
-		case 'I':
-			u.bin |= digital_tone_polarity_bit;
-			break;
-		case 'N':
-			u.bin &= ~digital_tone_polarity_bit;
-			break;
-		default:
-			input.unget();
-			streamerror( input );
-			break;
-		}
 		return;
 	}
 
@@ -44,10 +28,9 @@ void Tone::print( std::ostream& output ) const
 		output << "OFF";
 		return;
 	}
-	if( digital_tone_bit & u.bin )
+	if( u.bin & digital_tone_bit )
 	{
-		output	<< "D" << u.digital_tone
-			<< (u.bin & digital_tone_polarity_bit ? 'I' : 'N');
+		output << 'D' << u.digital_tone << u.polarity_bit;
 		return;
 	}
 	output << u.analog_tone;
