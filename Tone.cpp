@@ -1,6 +1,7 @@
 #include "Tone.h"
 
-#define digital_tone_bit		(b10000000 << 8)
+constexpr uint16_t digital_tone_bit = 0b10000000 << 8;
+
 //----------------------------------------------------------------
 void Tone::read( std::istream& input )
 {

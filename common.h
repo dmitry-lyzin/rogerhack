@@ -5,7 +5,7 @@
 #include <locale.h>
 #include <fcntl.h>
 #include <assert.h>
-#include "binary.h"
+//#include "binary.h"
 
 using std::cin;
 using std::cout;
