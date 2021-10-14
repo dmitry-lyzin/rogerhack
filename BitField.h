@@ -1,26 +1,25 @@
 #pragma once
 #include "common.h"
-#include "assert.h"
 
 #define TEMPL template		\
 < typename	Type		\
-, typename	Sample_type	\
-, Sample_type	samples[]	\
-, const size_t	samples_len	\
 , const size_t	bitindex	\
+, typename	Sample		\
+, Sample	samples[]	\
+, const size_t	samples_len	\
 >
-#define THIS BitField< Type, Sample_type, samples, samples_len, bitindex>
+#define THIS BitField< Type, bitindex, Sample, samples, samples_len>
 
 /* BitField< Type, samples, samples_len, bitindex>
- * @param typename	Type		тип поля для хранения ?
- * @param typename	Sample_type	тип шаблона (const char* | const char)
- * @param Sample_type	samples[]	массив шаблонов
+ * @param typename	Type		тип в котором находится битовое поле
+ * @param size_t	bitindex	номер бита(ов), считая от 0
+ * @param typename	Sample		тип шаблона (const char* | const char)
+ * @param Sample_type	samples[]	массив шаблонов имен значений битово поля
  * @param size_t	samples_len	длина массива шаблонов == степени двойки
- * @param size_t	bitindex	номер бита, считая от 0
  */
 TEMPL class BitField
 {
-	static_assert( !(samples_len& (samples_len - 1)), "The samples_len is a NOT a power of two");
+	static_assert( !(samples_len & (samples_len - 1)), "The samples_len is a NOT a power of two");
 protected:
 	Type value;
 private:
@@ -29,10 +28,10 @@ private:
 public:
 	operator Type() const	{ return (value & bitmask) >> bitindex;	};
 	operator bool() const	{ return  value & bitmask;		};
-	friend inline BitField& operator |= ( BitField& left, const unsigned int right )
+	friend inline BitField& operator |= ( BitField& left, const Type right )
 	{
 		//left.value &= ~left.bitmask;
-		left.value |= Type( right) << left.bitindex;
+		left.value |= right << left.bitindex;
 		return left;
 	};
 	bool mayread	( std::istream& input );
@@ -51,14 +50,14 @@ TEMPL inline std::ostream& operator<< ( std::ostream& output, const THIS& s ) { 
 //----------------------------------------------------------------
 TEMPL bool THIS::mayread( std::istream& input )
 {
-	for( size_t i = 0; i < samples_len; i++ )
+	for( Type i = 0; i < samples_len; i++ )
 	{
 		if( !samples[i] )
 			continue;
 		if( input >>= samples[i] )
 		{
 			value &= ~bitmask;
-			value |= Type( i ) << bitindex;
+			value |= i << bitindex;
 			return true;
 		}
 	}

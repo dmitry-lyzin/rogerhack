@@ -12,9 +12,9 @@ class Flags
 {
 	union
 	{
-		BitField< uint8_t, TPS( busy2str ), 0> busy;
-		BitField< uint8_t, TPS( scan2str ), 3> scan;
-		BitField< uint8_t, TPS( power2str), 4> power;
+		BitField< uint8_t, 0, TPS( busy2str )> busy;
+		BitField< uint8_t, 3, TPS( scan2str )> scan;
+		BitField< uint8_t, 4, TPS( power2str)> power;
 	} u;
 public:
 	SAMPLE_CLASS

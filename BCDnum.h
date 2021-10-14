@@ -12,7 +12,7 @@
 #define THIS BCDnum <T, leading_char, length, dot_char, precision, trailing_char>
 
 /**class BCDnum <T, leading_char, length, dot_char, precision, trailing_char>
- * Шаблон класса двоично десятичных (BCD) чисел
+ * . Шаблон класса двоично десятичных (BCD) чисел
  * 
  * @param typename T             тип поля для хранения BCD числа
  * @param char     leading_char  ведущий символ, если 0x0 - ничего не выводить, число прижмётся к левому краю
