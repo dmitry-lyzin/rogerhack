@@ -1,6 +1,8 @@
 #include "common.h"
 
 //----------------------------------------------------------------
+const char* filename = NULL;
+
 //[[noreturn]] void streamerror( std::istream & input)
 NO_RETURN void streamerror( std::istream& input )
 {
@@ -15,6 +17,7 @@ NO_RETURN void streamerror( std::istream& input )
 	cerr << "<===================\n";
 	exit( EXIT_FAILURE );
 }
+
 
 //----------------------------------------------------------------
 bool operator>>=( std::istream& input, const char* s )
@@ -40,7 +43,7 @@ std::istream& operator>>( std::istream& input, const char* s )
 	if( input >>= s )
 		return input;
 
-	cerr << "Wrong read! Wait word: \"" << s << '"';
+	cerr << filename << ": Wrong read! Wait word: \"" << s << '"';
 	streamerror( input );
 	return input;
 }
@@ -53,7 +56,7 @@ std::istream& operator>>( std::istream& input, const char c )
 		input.ignore();
 		return input;
 	}
-	cerr << "Wrong read! Wait char: \"" << c << '"';
+	cerr << filename << ": Wrong read! Wait char: \"" << c << '"';
 	streamerror( input );
 	return input;
 }

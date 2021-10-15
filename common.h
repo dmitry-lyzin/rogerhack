@@ -5,7 +5,6 @@
 #include <locale.h>
 #include <fcntl.h>
 #include <assert.h>
-//#include "binary.h"
 
 using std::cin;
 using std::cout;
@@ -33,8 +32,8 @@ inline std::ostream& operator<<( std::ostream& output,	const cls& s )	{ s.print(
 #define NO_RETURN __declspec(noreturn)
 #endif
 
+extern const char* filename;
 NO_RETURN void streamerror( std::istream& input );
-
 
 //----------------------------------------------------------------
 inline
@@ -113,7 +112,7 @@ public:
 			input.ignore();
 			return;
 		}
-		cerr << "Wrong read! Char: \"" << char( c ) << "\" not is digit";
+		cerr << filename << ": Wrong read! Char: \"" << char( c + '0' ) << "\" not is digit";
 		streamerror( input );
 	};
 	void print( std::ostream& output ) const { output << (value + '0'); };

@@ -70,7 +70,8 @@ TEMPL void THIS::read( std::istream& input )
 	if( mayread( input ) )
 		return;
 
-	const char* t = "Wrong read! Wait words: \"";
+	cerr << filename << ": Wrong read! Wait words: ";
+	const char* t = "\"";
 	for( size_t i = 0; i < samples_len; i++ )
 	{
 		if( !samples[i] )
