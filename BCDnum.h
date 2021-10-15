@@ -2,19 +2,19 @@
 #include "common.h"
 
 #define TEMPL template		\
-< typename T			\
+< typename Type			\
 , const char	leading_char	\
 , const size_t	length		\
 , const char	dot_char	\
 , const size_t	precision	\
 , const char	trailing_char	\
 >
-#define THIS BCDnum <T, leading_char, length, dot_char, precision, trailing_char>
+#define THIS BCDnum <Type, leading_char, length, dot_char, precision, trailing_char>
 
-/**class BCDnum <T, leading_char, length, dot_char, precision, trailing_char>
+/**class BCDnum <Type, leading_char, length, dot_char, precision, trailing_char>
  * . Шаблон класса двоично десятичных (BCD) чисел
  * 
- * @param typename T             тип поля для хранения BCD числа
+ * @param typename Type          тип поля для хранения BCD числа
  * @param char     leading_char  ведущий символ, если 0x0 - ничего не выводить, число прижмётся к левому краю
  * @param size_t   length        общая длина числа без символа-разделитель целой и дробной частей
  * @param char     dot_char      символ-разделитель целой и дробной частей
@@ -24,10 +24,10 @@
 TEMPL class BCDnum
 {
 protected:
-	T value;
+	Type value;
 private:
 	static constexpr const size_t	shift	= (length - 1) * 4;
-	static constexpr const T	mask	= 0xf << shift;
+	static constexpr const Type	mask	= 0xf << shift;
 public:
 	void read ( std::istream& input );
 	void print( std::ostream& output ) const;
@@ -63,9 +63,11 @@ TEMPL void THIS::read( std::istream& input )
 	}
 	value <<= (4 * i);
 }
+
+//----------------------------------------------------------------
 TEMPL void THIS::print( std::ostream& output ) const
 {
-	T tmp = value;
+	Type tmp = value;
 	char c;
 	size_t i = length - precision - 1;
 	for( ; i > 0; --i )
@@ -113,5 +115,6 @@ TEMPL void THIS::print( std::ostream& output ) const
 	}
 }
 
+//----------------------------------------------------------------
 #undef TEMPL
 #undef THIS
