@@ -1,63 +1,69 @@
 #pragma once
 #include "common.h"
 
-#define TEMPL template		\
-< typename	Type		\
-, const size_t	bitindex	\
-, typename	Sample		\
-, Sample	samples[]	\
-, const size_t	samples_len	\
->
-#define THIS BitField< Type, bitindex, Sample, samples, samples_len>
 
-/* BitField< Type, samples, samples_len, bitindex>
- * @param typename	Type		тип в котором находится битовое поле
- * @param size_t	bitindex	номер бита(ов), считая от 0
- * @param typename	Sample		тип шаблона (const char* | const char)
- * @param Sample_type	samples[]	массив шаблонов имен значений битово поля
- * @param size_t	samples_len	длина массива шаблонов == степени двойки
- */
+#define TEMPL template	\
+< typename Value	\
+, typename Sample	\
+>
+
+#define THIS BitField< Value, Sample>
+
+//----------------------------------------------------------------
 TEMPL class BitField
 {
-	static_assert( !(samples_len & (samples_len - 1)), "The samples_len is a NOT a power of two");
-protected:
-	Type value;
-private:
-	static constexpr const size_t	bitindex = bitindex;
-	static constexpr const Type	bitmask  = (samples_len - 1) << bitindex;
+	union
+	{
+		Value *pointer;
+		Value constant;
+	} value;
+
+	Sample		*sample;
+	const size_t	sample_len;
+	const size_t	bitindex;
+	const Value	bitmask;
+
 public:
-	operator Type() const	{ return (value & bitmask) >> bitindex;	};
-	operator bool() const	{ return  value & bitmask;		};
-	friend inline BitField& operator |= ( BitField& left, const Type right )
+	BitField( Sample sample_[], uint8_t sample_len_, size_t bitindex_ )
+		: value( { NULL } ), sample( sample_ )
+		, sample_len( sample_len_ ), bitindex( bitindex_ )
+		, bitmask( (sample_len_ - 1) << bitindex_ )
 	{
-		//left.value &= ~left.bitmask;
-		left.value |= right << left.bitindex;
-		return left;
+		assert( (!(sample_len & (sample_len - 1))
+			, "The sample_len is a NOT a power of two"
+			) );
 	};
-	bool mayread	( std::istream& input );
-	void read	( std::istream& input  );
-	void print	( std::ostream& output ) const
+
+	BitField& operator()(       Value *operand_ ) { value.pointer  = operand_; return *this; };
+	BitField& operator()( const Value  operand_ ) { value.constant = operand_; return *this; };
+
+	operator bool() const	{ return value.constant & bitmask; };
+	void set()		{ *value.pointer |= bitmask; };
+	bool mayread( std::istream& input );
+	void read( std::istream& input );
+	void print( std::ostream& output ) const
 	{
-		output << samples[ (value & bitmask) >> bitindex];
+		output << sample[(value.constant & bitmask) >> bitindex];
 	};
 };
 
-//----------------------------------------------------------------
-TEMPL inline bool	   operator>>=( std::istream& input,        THIS& s ) { return s.mayread( input );	  }
-TEMPL inline std::istream& operator>> ( std::istream& input,        THIS& s ) { s.read ( input ); return input;	  }
+TEMPL inline bool	   operator>>=( std::istream& input,        THIS& s ) { return s.mayread( input );        }
+TEMPL inline std::istream& operator>> ( std::istream& input,        THIS& s ) { s.read ( input  ); return input;  }
 TEMPL inline std::ostream& operator<< ( std::ostream& output, const THIS& s ) { s.print( output ); return output; }
 
 //----------------------------------------------------------------
 TEMPL bool THIS::mayread( std::istream& input )
 {
-	for( Type i = 0; i < samples_len; i++ )
+	for( size_t i = 0; i < sample_len; i++ )
 	{
-		if( !samples[i] )
+		if( !sample[i] )
 			continue;
-		if( input >>= samples[i] )
+		if( input >>= sample[i] )
 		{
-			value &= ~bitmask;
-			value |= i << bitindex;
+			register auto r = *value.pointer;
+			r &= ~bitmask;
+			r |= Value(i) << bitindex;
+			*value.pointer = r;
 			return true;
 		}
 	}
@@ -71,15 +77,16 @@ TEMPL void THIS::read( std::istream& input )
 		return;
 
 	const char* t = "Wrong read! Wait words: \"";
-	for( size_t i = 0; i < samples_len; i++ )
+	for( size_t i = 0; i < sample_len; i++ )
 	{
-		if( !samples[i] )
+		if( !sample[i] )
 			continue;
-		cerr << t << samples[i] << '"';
+		cerr << t << sample[i] << '"';
 		t = " or \"";
 	}
 	streamerror( input );
 }
 
+//----------------------------------------------------------------
 #undef TEMPL
 #undef THIS

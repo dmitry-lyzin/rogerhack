@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.8)
 project ("rogerhack")
 
 # Добавьте источник в исполняемый файл этого проекта.
-add_executable ("rogerhack" main.cpp binary.h BitField.h Channel.cpp Channel.h common.cpp common.h Flags.cpp Flags.h Frequency.cpp Frequency.h Sin.cpp Sin.h Tone.cpp Tone.h getopt.c getopt.h BCDnum.h)
+add_executable ("rogerhack" main.cpp BitField.h Channel.cpp Channel.h common.cpp common.h Flags.cpp Flags.h Frequency.cpp Frequency.h Sin.cpp Sin.h Tone.cpp Tone.h getopt.c getopt.h BCDnum.h)
 
 # Включить поддержку тестирования:
 enable_testing()
@@ -84,3 +84,9 @@ set_tests_properties(bed_text_3 PROPERTIES
 	REQUIRED_FILES ${testfiles}/bed3.txt
 	WILL_FAIL TRUE
 )
+
+#--------------------------------------
+# тест изменения размера executable
+#
+add_test( размер_как_был? compfilesize.bat rogerhack.exe EQU rogerhack.exe0)
+add_test( размер_усох?    compfilesize.bat rogerhack.exe LSS rogerhack.exe0)

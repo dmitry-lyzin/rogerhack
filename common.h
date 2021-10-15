@@ -5,11 +5,12 @@
 #include <locale.h>
 #include <fcntl.h>
 #include <assert.h>
-//#include "binary.h"
 
 using std::cin;
 using std::cout;
 using std::cerr;
+
+#define PS(x) (x), std::size(x)
 
 #define fatal(x) do { perror( x); exit( EXIT_FAILURE); } while (0)
 
