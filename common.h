@@ -20,6 +20,7 @@ using std::cerr;
 inline std::istream& operator>>( std::istream& input,	cls& s )	{ s.read( input ); return input; }	\
 inline std::ostream& operator<<( std::ostream& output,	const cls& s )	{ s.print( output ); return output; }
 
+extern char dot_char;
 
 //----------------------------------------------------------------
 #ifdef __GNUC__

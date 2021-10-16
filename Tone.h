@@ -14,8 +14,8 @@ class Tone
 	{
 		uint16_t bin;
 		BitField< uint16_t, 14, TPS( polarity_bit_str )>	polarity_bit;
-		BCDnum	< uint16_t, 0x0, 4, '.', 1, '0'>		analog_tone;
-		BCDnum	< uint16_t, '0', 3, '.', 0, '0'>		digital_tone;
+		BCDnum	< uint16_t, 0x0, 4, 1, '0'>		analog_tone;
+		BCDnum	< uint16_t, '0', 3, 0, '0'>		digital_tone;
 	} u;
 public:
 	SAMPLE_CLASS

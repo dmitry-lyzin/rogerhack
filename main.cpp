@@ -23,9 +23,10 @@ NO_RETURN void usage( const char* cmd )
 		}
 	}
 
-	cerr << "Usage:  " << cmd << " [-h] [-l file] [-s file] [-r file] [-p file]\n"
+	cerr << "Usage:  " << cmd << " [-h] [-d .|,] [-l file] [-s file] [-r file] [-p file]\n"
 		"\n"
 		"Parameters:\n"
+		"	-d .|,		Decimal separator\n"
 		"	-l file		Load file.sin\n"
 		"	-s file		Save file.sin\n"
 		"	-r file		Read text file\n"
@@ -57,7 +58,7 @@ int main( int argc, const char* argv[] )
 	std::fstream fs;
 	while( true)
 	{
-		switch( getopt( argc, argv, "hl:s:p:r:" ) )
+		switch( getopt( argc, argv, "hd:l:s:p:r:" ) )
 		{
 		case 'p':
 			if( is_minus( optarg ) )
@@ -98,6 +99,7 @@ int main( int argc, const char* argv[] )
 
 		case 'l': SIN.load( optarg );	break;
 		case 's': SIN.save( optarg );	break;
+		case 'd': dot_char = optarg[0];	break;
 		case 'h': usage( cmd );		break;
 		default:  exit( EXIT_FAILURE );	break;
 		}
