@@ -97,11 +97,11 @@ int main( int argc, const char* argv[] )
 			exit( exit_code );
 			break;
 
-		case 'l': SIN.load( optarg );	break;
-		case 's': SIN.save( optarg );	break;
-		case 'd': dot_char = optarg[0];	break;
-		case 'h': usage( cmd );		break;
-		default:  exit( EXIT_FAILURE );	break;
+		case 'l': SIN.load( optarg );		break;
+		case 's': SIN.save( optarg );		break;
+		case 'd': dec_separator = optarg[0];	break;
+		case 'h': usage( cmd );			break;
+		default:  exit( EXIT_FAILURE );		break;
 		}
 	}
 }

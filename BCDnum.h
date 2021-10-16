@@ -5,20 +5,20 @@
 < typename Type			\
 , const char	leading_char	\
 , const size_t	length		\
-/*, const char	dot_char*/	\
+/*, const char	dec_separator*/	\
 , const size_t	precision	\
 , const char	trailing_char	\
 
-#define THIS BCDnum <Type, leading_char, length, /*dot_char,*/ precision, trailing_char>
+#define THIS BCDnum <Type, leading_char, length, /*dec_separator,*/ precision, trailing_char>
 
-//**class BCDnum <Type, leading_char, length, dot_char, precision, trailing_char>
+//**class BCDnum <Type, leading_char, length, dec_separator, precision, trailing_char>
 /**class BCDnum <Type, leading_char, length, precision, trailing_char>
  * . Шаблон класса двоично десятичных (BCD) чисел
  * 
  * @param typename Type          тип поля для хранения BCD числа
  * @param char     leading_char  ведущий символ, если 0x0 - ничего не выводить, число прижмётся к левому краю
  * @param size_t   length        общая длина числа без символа-разделитель целой и дробной частей
- * @param- char     dot_char      символ-разделитель целой и дробной частей
+ * @param- char     dec_separator символ-разделитель целой и дробной частей
  * @param size_t   precision     точность (длина дробной части)
  * @param char     trailing_char символ вместо завершающих нулей, если 0x0 - ничего не выводить
  */
@@ -52,7 +52,7 @@ TEMPL> void THIS::read( std::istream& input )
 	size_t i = precision;
 	if( !precision )
 		return;
-	input >> (const char)dot_char;
+	input >> (const char)dec_separator;
 
 	for( ; i > 0; --i )
 	{
@@ -99,7 +99,7 @@ TEMPL> void THIS::print( std::ostream& output ) const
 	if( !precision )
 		return;
 
-	output.put( dot_char );
+	output.put( dec_separator );
 	for( size_t i = precision; i > 0; --i )
 	{
 		if( !tmp )
