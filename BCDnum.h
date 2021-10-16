@@ -8,7 +8,7 @@
 /*, const char	dot_char*/	\
 , const size_t	precision	\
 , const char	trailing_char	\
->
+
 #define THIS BCDnum <Type, leading_char, length, /*dot_char,*/ precision, trailing_char>
 
 //**class BCDnum <Type, leading_char, length, dot_char, precision, trailing_char>
@@ -22,7 +22,7 @@
  * @param size_t   precision     точность (длина дробной части)
  * @param char     trailing_char символ вместо завершающих нулей, если 0x0 - ничего не выводить
  */
-TEMPL class BCDnum
+TEMPL='0'> class BCDnum
 {
 protected:
 	Type value;
@@ -34,11 +34,11 @@ public:
 	void print( std::ostream& output ) const;
 };
 
-TEMPL inline std::istream& operator>>( std::istream& input,        THIS& s ) { s.read ( input );  return input;  }
-TEMPL inline std::ostream& operator<<( std::ostream& output, const THIS& s ) { s.print( output ); return output; }
+TEMPL> inline std::istream& operator>>( std::istream& input,        THIS& s ) { s.read ( input );  return input;  }
+TEMPL> inline std::ostream& operator<<( std::ostream& output, const THIS& s ) { s.print( output ); return output; }
 
 //----------------------------------------------------------------
-TEMPL void THIS::read( std::istream& input )
+TEMPL> void THIS::read( std::istream& input )
 {
 	Digit_char dc;
 	input >> dc;
@@ -66,7 +66,7 @@ TEMPL void THIS::read( std::istream& input )
 }
 
 //----------------------------------------------------------------
-TEMPL void THIS::print( std::ostream& output ) const
+TEMPL> void THIS::print( std::ostream& output ) const
 {
 	Type tmp = value;
 	char c;
