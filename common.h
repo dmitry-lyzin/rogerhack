@@ -11,6 +11,7 @@ using std::cout;
 using std::cerr;
 
 #define fatal(x) do { perror( x); exit( EXIT_FAILURE); } while (0)
+#define SIZE(x) (sizeof(x)/sizeof(*(x)))
 
 //----------------------------------------------------------------
 #define SAMPLE_CLASS( cls)											\
@@ -56,7 +57,7 @@ std::istream& operator>>( std::istream& input, const char* s );
 static class Any_line {} any_line;
 inline std::istream& operator>>( std::istream& input, Any_line s )
 {
-	input.ignore( std::numeric_limits<std::streamsize>::max(), '\n' );
+    input.ignore( INT_MAX, '\n' );
 	return input;
 }
 inline std::ostream& operator<<( std::ostream& output, Any_line s )

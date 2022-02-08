@@ -23,7 +23,7 @@ TEMPL class BitField
 protected:
 	Type value;
 private:
-	static constexpr const size_t	bitindex = bitindex;
+    //static constexpr const size_t	bitindex = bitindex;
 	static constexpr const Type	bitmask  = (samples_len - 1) << bitindex;
 public:
 	operator Type() const	{ return (value & bitmask) >> bitindex;	};

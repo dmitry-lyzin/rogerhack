@@ -3,7 +3,7 @@
 #include "BitField.h"
 #include "BCDnum.h"
 
-#define TPS(x) const char, (x), std::size(x)
+#define TPS(x) const char, (x), (sizeof(x)/sizeof(*(x)))
 
 static const char polarity_bit_str[] = { 'N', 'I' };
 

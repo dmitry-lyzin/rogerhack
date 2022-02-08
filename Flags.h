@@ -2,7 +2,7 @@
 #include "common.h"
 #include "BitField.h"
 
-#define TPS(x) const char*, (x), std::size(x)
+#define TPS(x) const char*, (x), (sizeof(x)/sizeof(*(x)))
 
 static const char* busy2str [] = { "OFF",	"QT/DQT", "Carrier",	NULL	};
 static const char* scan2str [] = { "Delete",	"Add"	};

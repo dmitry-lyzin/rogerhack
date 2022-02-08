@@ -1,4 +1,5 @@
 #include "Sin.h"
+#include <sys/stat.h> //QT хочет для S_IREAD | S_IWRITE
 
 #ifdef __unix__
 #	include <unistd.h>
