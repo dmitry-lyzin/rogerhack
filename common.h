@@ -13,14 +13,6 @@ using std::cerr;
 #define fatal(x) do { perror( x); exit( EXIT_FAILURE); } while (0)
 #define SIZE(x) (sizeof(x)/sizeof(*(x)))
 
-//----------------------------------------------------------------
-#define SAMPLE_CLASS( cls)											\
-	void read( std::istream& input );									\
-	void print( std::ostream& output ) const;								\
-};														\
-inline std::istream& operator>>( std::istream& input,	cls& s )	{ s.read( input ); return input; }	\
-inline std::ostream& operator<<( std::ostream& output,	const cls& s )	{ s.print( output ); return output; }
-
 extern char dec_separator;
 
 //----------------------------------------------------------------
