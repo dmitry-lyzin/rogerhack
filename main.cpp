@@ -17,6 +17,9 @@
 #	define DIRECTORY_SEPARATOR '\\'
 #endif
 
+// Type Pointer Size
+#define TPS(x) typeof(*(x)), (x), (sizeof(x)/sizeof(*(x)))
+
 //----------------------------------------------------------------
 #define FRIEND_OPERATORS( cls)										\
 friend std::ostream& operator<<( std::ostream &os, const cls &obj ) { obj.print( os); return os;}	\
@@ -62,13 +65,11 @@ class Tone
 
 	union
 	{
-#define TPS(x) const char, (x), (sizeof(x)/sizeof(*(x)))
 		uint16_t bin;
 		BitField< uint16_t, 14, TPS( polarity_bit_str )> polarity_bit;
 
 		BCDnum	< uint16_t, 0x0, 4, 1> analog_tone;
 		BCDnum	< uint16_t, '0', 3, 0> digital_tone;
-#undef TPS
 	} u;
 public:
 
@@ -115,11 +116,9 @@ class Flags
 {
 	union
 	{
-#define TPS(x) const char *const, (x), (sizeof(x)/sizeof(*(x)))
-		BitField< uint8_t, 0, TPS( busy2str )> busy;
+        BitField< uint8_t, 0, TPS( busy2str )> busy;
 		BitField< uint8_t, 3, TPS( scan2str )> scan;
 		BitField< uint8_t, 4, TPS( power2str)> power;
-#undef TPS
 	} u;
 public:
 
