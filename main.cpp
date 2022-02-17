@@ -39,9 +39,9 @@ using std::cerr;
 #endif
 
 //----------------------------------------------------------------
-#define FRIEND_OPERATORS( cls)										\
-friend std::ostream& operator<<( std::ostream &os, const cls &obj ) { obj.print( os); return os;}	\
-friend std::istream& operator>>( std::istream &is,       cls &obj ) { obj.read( is); return is; }
+#define FRIEND_OPERATORS( Cls)										\
+friend std::ostream& operator<<( std::ostream &os, const Cls &obj ) { obj.print( os); return os;}	\
+friend std::istream& operator>>( std::istream &is,       Cls &obj ) { obj.read( is); return is; }
 
 //----------------------------------------------------------------
 #define fatal(x) do { perror( x); exit( EXIT_FAILURE); } while (0)
@@ -71,7 +71,7 @@ NO_RETURN void streamerror( std::istream& input )
 //================================================================
 class Frequency : public BCDnum< uint32_t, 0x0, 8, 5>
 {
-	typedef BCDnum< uint32_t, 0x0, 8, 5> Super;
+	typedef BCDnum< uint32_t, 0x0, 8, 5> Base;
 
 public:
 
@@ -83,7 +83,7 @@ public:
 			value = 0xffffffffu;
 			return;
 		}
-		Super::read( input );
+		Base::read( input );
 		if( !input )
 			streamerror( input );
 	}
@@ -96,7 +96,7 @@ public:
 			output << "---------";
 			return;
 		}
-		Super::print( output );
+		Base::print( output );
 	}
 	FRIEND_OPERATORS( Frequency )
 };
