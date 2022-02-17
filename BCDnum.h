@@ -1,5 +1,8 @@
 #pragma once
 #include "common.h"
+#include <iostream>
+
+extern char dec_separator;
 
 #define TEMPL template		\
 < typename Type			\

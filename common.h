@@ -1,33 +1,5 @@
 #pragma once
 #include <iostream>
-#include <stdint.h>
-#include <stdlib.h>
-#include <locale.h>
-#include <fcntl.h>
-#include <assert.h>
-
-using std::cin;
-using std::cout;
-using std::cerr;
-
-#define fatal(x) do { perror( x); exit( EXIT_FAILURE); } while (0)
-#define SIZE(x) (sizeof(x)/sizeof(*(x)))
-
-extern char dec_separator;
-
-//----------------------------------------------------------------
-#ifdef __GNUC__
-#define NO_RETURN __attribute__((noreturn))
-#elif __MINGW32__
-#define NO_RETURN __attribute__((noreturn))
-#elif __clang__
-#define NO_RETURN __attribute__((noreturn))
-#elif _MSC_VER
-#define NO_RETURN __declspec(noreturn)
-#endif
-
-extern const char* filename;
-NO_RETURN void streamerror( std::istream& input );
 
 //----------------------------------------------------------------
 inline
@@ -49,8 +21,10 @@ std::istream& operator>>( std::istream& input, const char* s );
 static class Any_line {} any_line;
 inline std::istream& operator>>( std::istream& input, Any_line s )
 {
-    input.ignore( INT_MAX, '\n' );
-	return input;
+	//if( !input )
+	//	return input;
+	input.ignore( INT_MAX, '\n' );
+		return input;
 }
 inline std::ostream& operator<<( std::ostream& output, Any_line s )
 {
@@ -62,6 +36,8 @@ inline std::ostream& operator<<( std::ostream& output, Any_line s )
 static class Any_word {} any_word;
 inline std::istream& operator>>( std::istream& input, Any_word s )
 {
+	if( !input )
+		return input;
 	char c;
 	while( input.get( c))
 	{
@@ -99,6 +75,9 @@ public:
 
 	void read( std::istream& input )
 	{
+		//if( !input )
+		//	return;
+
 		int c = input.peek() - '0';
 		if( 0 <= c && c <= 9 )
 		{
@@ -106,8 +85,8 @@ public:
 			input.ignore();
 			return;
 		}
-		cerr << filename << ": Wrong read! Char: \"" << char( c + '0' ) << "\" not is digit";
-		streamerror( input );
+		std::cerr << "Wrong read! Char: \"" << char( c + '0' ) << "\" not is digit";
+	        input.setstate( std::ios_base::failbit );
 	};
 	void print( std::ostream& output ) const { output << (value + '0'); };
 };

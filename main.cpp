@@ -1,8 +1,18 @@
-#include "common.h"
 #include <fstream>
 #include <sys/stat.h>
-#include "BitField.h"
+#include <stdint.h>
+#include <stdlib.h>
+#include <locale.h>
+#include <fcntl.h>
+#include <assert.h>
+#include "common.h"
+#include "BitSet.h"
 #include "BCDnum.h"
+
+
+using std::cin;
+using std::cout;
+using std::cerr;
 
 #ifdef __unix__
 #	include <unistd.h>
@@ -17,13 +27,46 @@
 #	define DIRECTORY_SEPARATOR '\\'
 #endif
 
-// Type Pointer Size
-#define TPS(x) typeof(*(x)), (x), (sizeof(x)/sizeof(*(x)))
+//----------------------------------------------------------------
+#ifdef __GNUC__
+#define NO_RETURN __attribute__((noreturn))
+#elif __MINGW32__
+#define NO_RETURN __attribute__((noreturn))
+#elif __clang__
+#define NO_RETURN __attribute__((noreturn))
+#elif _MSC_VER
+#define NO_RETURN __declspec(noreturn)
+#endif
 
 //----------------------------------------------------------------
 #define FRIEND_OPERATORS( cls)										\
 friend std::ostream& operator<<( std::ostream &os, const cls &obj ) { obj.print( os); return os;}	\
 friend std::istream& operator>>( std::istream &is,       cls &obj ) { obj.read( is); return is; }
+
+//----------------------------------------------------------------
+#define fatal(x) do { perror( x); exit( EXIT_FAILURE); } while (0)
+
+//----------------------------------------------------------------
+char dec_separator = '.'; // символ-разделитель целой и дробной частей
+
+
+const char* filename = NULL;
+
+//----------------------------------------------------------------
+//[[noreturn]] void streamerror( std::istream & input)
+NO_RETURN void streamerror( std::istream& input )
+{
+	input.clear();
+	cerr << '\n' << filename << ":\n===================>";
+	int c = input.get();
+	while( c > 0 )
+	{
+		cerr.put( c );
+		c = input.get();
+	}
+	cerr << "<===================\n";
+	exit( EXIT_FAILURE );
+}
 
 //================================================================
 class Frequency : public BCDnum< uint32_t, 0x0, 8, 5>
@@ -41,6 +84,8 @@ public:
 			return;
 		}
 		Super::read( input );
+		if( !input )
+			streamerror( input );
 	}
 	void print( std::ostream& output ) const
 	{
@@ -57,7 +102,7 @@ public:
 };
 
 //================================================================
-const char polarity_bit_str[] = { 'N', 'I' };
+const Field16 polarity_bit_man[] = { Field16("N", 0, 1<<14), Field16("I", 1<<14) };
 
 class Tone
 {
@@ -66,8 +111,7 @@ class Tone
 	union
 	{
 		uint16_t bin;
-		BitField< uint16_t, 14, TPS( polarity_bit_str )> polarity_bit;
-
+		BITSET( polarity_bit_man) polarity_bit;
 		BCDnum	< uint16_t, 0x0, 4, 1> analog_tone;
 		BCDnum	< uint16_t, '0', 3, 0> digital_tone;
 	} u;
@@ -89,6 +133,8 @@ public:
 		}
 
 		input >> u.analog_tone;
+		if( !input )
+			streamerror( input );
 	}
 	void print( std::ostream& output ) const
 	{
@@ -108,17 +154,17 @@ public:
 };
 
 //================================================================
-const char *const busy2str [] = { "OFF",	"QT/DQT", "Carrier",	NULL	};
-const char *const scan2str [] = { "Delete",	"Add"	};
-const char *const power2str[] = { "Low",	"High"	};
+const Field8 busy_map [] = { Field8( "OFF",	0b00,	0b11 ),	Field8( "QT/DQT", 0b01,	0b11 ), Field8( "Carrier", 0b10, 0b11)	};
+const Field8 scan_map [] = { Field8( "Delete",	0u,	1u<<3),	Field8( "Add",		1u<<3)					};
+const Field8 power_map[] = { Field8( "Low",	0u,	1u<<4),	Field8( "High",		1u<<4)					};
 
 class Flags
 {
 	union
 	{
-        BitField< uint8_t, 0, TPS( busy2str )> busy;
-		BitField< uint8_t, 3, TPS( scan2str )> scan;
-		BitField< uint8_t, 4, TPS( power2str)> power;
+		BITSET( busy_map ) busy;
+		BITSET( scan_map ) scan;
+		BITSET( power_map) power;
 	} u;
 public:
 
@@ -127,6 +173,8 @@ public:
 		input	>> u.busy >> '\t'
 			>> u.scan >> '\t'
 			>> u.power;
+		if( !input )
+			streamerror( input );
 	}
 	void print( std::ostream& output ) const
 	{
@@ -159,6 +207,8 @@ public:
 		input	>> receive >> '\t' >> transmit >> '\t'
 			>> rx_tone >> '\t' >> tx_tone >> '\t'
 			>> flags;
+		if( !input )
+			streamerror( input );
 	}
 	void print( std::ostream& output ) const
 	{
@@ -229,6 +279,8 @@ struct Sin
 
 			input >> channel >> any_line;
 		}
+		if( !input )
+			streamerror( input );
 	}
 	void print( std::ostream& output ) const
 	{

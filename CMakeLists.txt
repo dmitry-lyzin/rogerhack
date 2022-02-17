@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.8)
 project ("rogerhack")
 
 # Добавьте источник в исполняемый файл этого проекта.
-add_executable ("rogerhack" main.cpp BCDnum.h BitField.h common.cpp common.h getopt.c getopt.h)
+add_executable ("rogerhack" main.cpp BCDnum.h BitSet.h common.cpp common.h getopt.c getopt.h)
 
 # Включить поддержку тестирования:
 enable_testing()
