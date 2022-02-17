@@ -1,18 +1,7 @@
 #pragma once
 #include "common.h"
-#include <iostream>
 
 extern char dec_separator;
-
-#define TEMPL template		\
-< typename Type			\
-, const char	leading_char	\
-, const size_t	length		\
-/*, const char	dec_separator*/	\
-, const size_t	precision	\
-, const char	trailing_char	\
-
-#define THIS BCDnum <Type, leading_char, length, /*dec_separator,*/ precision, trailing_char>
 
 //**class BCDnum <Type, leading_char, length, dec_separator, precision, trailing_char>
 /**class BCDnum <Type, leading_char, length, precision, trailing_char>
@@ -25,7 +14,14 @@ extern char dec_separator;
  * @param size_t   precision     точность (длина дробной части)
  * @param char     trailing_char символ вместо завершающих нулей, если 0x0 - ничего не выводить
  */
-TEMPL='0'> class BCDnum
+template
+<	typename Type
+,	const char	leading_char
+,	const size_t	length
+/*,	const char	dec_separator*/
+,	const size_t	precision
+,	const char	trailing_char='0'
+> class BCDnum
 {
 protected:
 	Type value;
@@ -33,92 +29,81 @@ private:
 	static constexpr const size_t	shift	= (length - 1) * 4;
 	static constexpr const Type	mask	= 0xf << shift;
 public:
-	void read ( std::istream& input  );
-	void print( std::ostream& output ) const;
-};
-
-TEMPL> inline std::istream& operator>>( std::istream& input,        THIS& s ) { s.read ( input );  return input;  }
-TEMPL> inline std::ostream& operator<<( std::ostream& output, const THIS& s ) { s.print( output ); return output; }
-
-//----------------------------------------------------------------
-TEMPL> void THIS::read( std::istream& input )
-{
-	Digit_char dc;
-	input >> dc;
-	value = dc.value;
-	while( input >>= dc )
+	void read ( std::istream& input  )
 	{
-		value <<= 4;
-		value |= dc.value;
-	}
-
-	size_t i = precision;
-	if( !precision )
-		return;
-	input >> (const char)dec_separator;
-
-	for( ; i > 0; --i )
-	{
-		if( !(input >>= dc) )
-			break;
-
-		value <<= 4;
-		value |= dc.value;
-	}
-	value <<= (4 * i);
-}
-
-//----------------------------------------------------------------
-TEMPL> void THIS::print( std::ostream& output ) const
-{
-	Type tmp = value;
-	char c;
-	size_t i = length - precision - 1;
-	for( ; i > 0; --i )
-	{
-		c = (tmp & mask) >> shift;
-		tmp <<= 4;
-		if( c )
+		Digit_char dc;
+		input >> dc;
+		value = dc.value;
+		while( input >>= dc )
 		{
-			output.put( c + '0' );
-			--i;
-			break;
+			value <<= 4;
+			value |= dc.value;
 		}
-		if( leading_char )
-			output.put( leading_char );
-	}
 
-	for( ; i > 0; --i )
-	{
-		c = (tmp & mask) >> shift;
-		tmp <<= 4;
-		output.put( c + '0' );
-	}
+		size_t i = precision;
+		if( !precision )
+			return;
+		input >> (const char)dec_separator;
 
-	c = (tmp & mask) >> shift;
-	tmp <<= 4;
-	output.put( c + '0' );
-
-	if( !precision )
-		return;
-
-	output.put( dec_separator );
-	for( size_t i = precision; i > 0; --i )
-	{
-		if( !tmp )
+		for( ; i > 0; --i )
 		{
-			if( !trailing_char )
+			if( !(input >>= dc) )
 				break;
-			for( ; i > 0; --i )
-				output.put( trailing_char );
-			break;
+
+			value <<= 4;
+			value |= dc.value;
 		}
+		value <<= (4 * i);
+	}
+	void print( std::ostream& output ) const
+	{
+		Type tmp = value;
+		char c;
+		size_t i = length - precision - 1;
+		for( ; i > 0; --i )
+		{
+			c = (tmp & mask) >> shift;
+			tmp <<= 4;
+			if( c )
+			{
+				output.put( c + '0' );
+				--i;
+				break;
+			}
+			if( leading_char )
+				output.put( leading_char );
+		}
+
+		for( ; i > 0; --i )
+		{
+			c = (tmp & mask) >> shift;
+			tmp <<= 4;
+			output.put( c + '0' );
+		}
+
 		c = (tmp & mask) >> shift;
 		tmp <<= 4;
 		output.put( c + '0' );
-	}
-}
 
-//----------------------------------------------------------------
-#undef TEMPL
-#undef THIS
+		if( !precision )
+			return;
+
+		output.put( dec_separator );
+		for( size_t i = precision; i > 0; --i )
+		{
+			if( !tmp )
+			{
+				if( !trailing_char )
+					break;
+				for( ; i > 0; --i )
+					output.put( trailing_char );
+				break;
+			}
+			c = (tmp & mask) >> shift;
+			tmp <<= 4;
+			output.put( c + '0' );
+		}
+	}
+	friend std::ostream& operator<<( std::ostream &os, const BCDnum &obj ) { obj.print( os); return os;}
+	friend std::istream& operator>>( std::istream &is,       BCDnum &obj ) { obj.read( is); return is; }
+};
